@@ -1,5 +1,4 @@
 local waywall = require("waywall")
-local c       = require("waywordle.colors")
 
 local M       = {}
 
@@ -40,13 +39,13 @@ function M.list_contains(words, word)
     return false
 end
 
-function M.typing_actions(config, fn)
+function M.typing_actions(config, fn, cfg)
     local saved = {}
     for key, func in pairs(config.actions) do
         local normalized_key = M.normalize_key(key)
         if M.list_contains(letters, normalized_key) then
             config.actions[key] = function()
-                return Goredle_On and fn(normalized_key) or func()
+                return Goredle_On and fn(normalized_key, cfg) or func()
             end
             saved[normalized_key] = true
         else
@@ -59,7 +58,7 @@ function M.typing_actions(config, fn)
     for _, letter in ipairs(letters) do
         if not saved[letter] then
             config.actions["*-" .. letter] = function()
-                return Goredle_On and fn(letter) or false
+                return Goredle_On and fn(letter, cfg) or false
             end
         end
     end
@@ -96,7 +95,8 @@ function M.score_word(word, target)
     return score
 end
 
-function M.color_letter(score)
+function M.color_letter(score, cfg)
+    local c = cfg.colors
     if score == 0 then
         return c.incorrect
     elseif score == 1 then
@@ -108,7 +108,7 @@ function M.color_letter(score)
     end
 end
 
-function M.print_word(word_object, word_c, index, position)
+function M.print_word(word_object, word_c, index, cfg)
     word_object[index] = word_object[index] or { nil, nil, nil, nil, nil }
 
     for i = 1, 5 do
@@ -118,10 +118,10 @@ function M.print_word(word_object, word_c, index, position)
         end
         local char = word_c.string:sub(i, i)
         word_object[index][i] = waywall.text(char, {
-            x = position.x + position.size * 8 * (i - 1),
-            y = position.y + (position.size + 2) * 10 * index,
-            size = position.size,
-            color = M.color_letter(word_c.score[i]),
+            x = cfg.x + cfg.size * 8 * (i - 1),
+            y = cfg.y + (cfg.size + 2) * 10 * index,
+            size = cfg.size,
+            color = M.color_letter(word_c.score[i], cfg),
         })
     end
 end

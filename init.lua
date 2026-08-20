@@ -1,18 +1,23 @@
 -- ==== cfg
 
-local cfg = {
-    x = 200,
-    y = 200,
-    size = 7,
-    start_key = "F7",
-}
+-- local cfg = {
+--     x = 200,
+--     y = 200,
+--     size = 7,
+--     start_key = "F7",
+--     colors = {
+--         text = "#FFFFFF",
+--         incorrect = "#3a3a3c",
+--         partial = "#f5793a",
+--         correct = "#85c0f9",
+--     }
+-- }
 
 -- ==== IMPORTS
 local waywall = require("waywall")
 local M = {}
 local h = require("waywordle.helpers")
 local words = require("waywordle.words")
-local c = require("waywordle.colors")
 local valid_words = require("waywordle.valid")
 local try_again_text = nil
 
@@ -47,7 +52,7 @@ function Clear_Goredle()
     cur_word = ""
 end
 
-function Update_Words(close)
+function Update_Words(close, cfg)
     for i, _ in pairs(word_object) do
         for j, handle in pairs(word_object[i]) do
             if handle then
@@ -65,7 +70,7 @@ function Update_Words(close)
     end
 end
 
-function Update_Goredle(key)
+function Update_Goredle(key, cfg)
     if cur_word:sub(1, 3) == "You" then
         Clear_Goredle()
     end
@@ -97,20 +102,20 @@ function Update_Goredle(key)
             cur_word = ""
         end
 
-        Update_Words(true)
+        Update_Words(true, cfg)
     end
     cur_word_object = waywall.text(cur_word, {
         x = cfg.x,
         y = cfg.y + (cfg.size + 2) * 10 * 8,
         size = cfg.size,
-        color = c.text
+        color = cfg.colors.text
     })
 
 
     return true
 end
 
-function Toggle_Goredle(config)
+function Toggle_Goredle(config, cfg)
     if goredle_overlay_text then
         goredle_overlay_text:close()
         goredle_overlay_text = nil
@@ -121,14 +126,14 @@ function Toggle_Goredle(config)
     end
     -- SWITCH MODE FROM NORMAL TO GOREDLE AND BACK
     if not Goredle_On then
-        Update_Words(true)
+        Update_Words(true, cfg)
         -- START GOREDLE
         Goredle_On = true
         goredle_overlay_text = waywall.text("WAYWORDLE", {
             x = cfg.x - (cfg.size * 5 * 2.5),
             y = cfg.y - (cfg.size + 2) / 2,
             size = cfg.size,
-            color = c.text
+            color = cfg.colors.text
         })
 
         if not Chosen_Word then
@@ -145,15 +150,15 @@ function Toggle_Goredle(config)
     end
 end
 
-M.setup = function(config)
+M.setup = function(config, cfg)
     math.randomseed(os.time())
     math.random(); math.random(); math.random()
     -- Save original remaps
     Goredle_On = false
-    h.typing_actions(config, Update_Goredle)
+    h.typing_actions(config, Update_Goredle, cfg)
 
     -- TESTING
-    config.actions[cfg.start_key] = function() Toggle_Goredle(config) end
+    config.actions[cfg.start_key] = function() Toggle_Goredle(config, cfg) end
 end
 
 return M
