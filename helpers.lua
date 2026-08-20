@@ -104,7 +104,7 @@ function M.color_letter(score, cfg)
     elseif score == 2 then
         return c.correct
     elseif score == -1 then
-        return c.white
+        return c.text
     end
 end
 

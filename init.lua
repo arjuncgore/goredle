@@ -73,6 +73,8 @@ end
 function Update_Goredle(key, cfg)
     if cur_word:sub(1, 3) == "You" then
         Clear_Goredle()
+        Chosen_Word = words[math.random(#words)]
+        print("Target Word = \"" .. Chosen_Word .. "\"")
     end
     if cur_word_object then
         cur_word_object:close()
