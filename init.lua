@@ -131,7 +131,7 @@ function Toggle_Goredle(config, cfg)
         Update_Words(true, cfg)
         -- START GOREDLE
         Goredle_On = true
-        goredle_overlay_text = waywall.text("WAYWORDLE", {
+        goredle_overlay_text = waywall.text("WAYWORDLE by Gore", {
             x = cfg.x - (cfg.size * 5 * 2.5),
             y = cfg.y - (cfg.size + 2) / 2,
             size = cfg.size,
